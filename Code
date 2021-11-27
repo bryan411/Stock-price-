@@ -1,0 +1,259 @@
+import java.util.*;
+import java.text.*;
+import java.io.*;
+
+public class IS3230_L02_2
+{
+    public static void main (String[] args) throws IOException, ParseException
+    {
+        //Enter the start date and end date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date sDate = sdf.parse(args[0]);
+        Date eDate = sdf.parse(args[1]);
+        
+        //Use while-loop to let users enter valid option
+        int enter = getUserOption();
+        while (enter < 1 || enter > 3)
+        {
+            System.out.println("Please imput integer from 1 to 3."+"\n" +"Please try again");
+            enter = getUserOption();
+        }
+        
+        //call out the methods of corresponding options
+        switch (enter)
+        {
+            case 1:
+            hangingMan(sDate, eDate, "table.csv");
+            break;
+            
+            case 2:
+            threeBlackCraws(sDate, eDate, "table.csv");
+            break;
+            
+            case 3:
+            bearishKicker(sDate, eDate, "table.csv");
+            break;
+        }
+    }
+    
+    //print out the wordings to get user options by Scanner class
+    public static int getUserOption() throws InputMismatchException
+    {
+        int option = 0;
+        System.out.println(" 1. Hanging Man ");
+        System.out.println(" 2. Three Black Craws ");
+        System.out.println(" 3. Bearish Kicker ");
+        System.out.print("Pattern: ");
+        Scanner scanj = new Scanner (System.in);
+        
+        try
+        {
+            option = scanj.nextInt();
+        }
+        catch (InputMismatchException e)
+        {
+            System.out.println("Error! Invalid enter!");
+        }
+        return option;
+    }
+	
+    
+  //search for hanging man pattern
+    public static void hangingMan(Date sDate, Date eDate, String fileName) throws IOException, ParseException
+    {
+        boolean located = false;
+        //matching the date format in the table
+        SimpleDateFormat sdfj = new SimpleDateFormat("yyyy-MM-dd");
+		
+			File myfile = new File (fileName);
+			Scanner openfile = new Scanner(myfile);
+			openfile.nextLine(); //skip the head line directly
+		
+        while (openfile.hasNext())
+        {
+            //enter the data into array
+            String row = openfile.nextLine();
+            String[] data = row.split(",");
+            Date   date  = sdfj.parse(data[0]);
+            double open  = Double.parseDouble (data[1]);
+            double high  = Double.parseDouble (data[2]);
+            double low   = Double.parseDouble (data[3]);
+            double close = Double.parseDouble (data[4]);
+            /*
+			Defining the pattern of Hanging man
+			1. One Day pattern]
+			2.The colour of candle stick should belongs to Black
+			Black Candle: The Opening price should be higher than closing price
+			3.The lower shadow is two times greater than the body
+			4.The upper is less than half of the body
+			*/
+            //use nest-if to check the condition of Hanging Man day by day
+            if (date.after(sDate) && date.before(eDate))
+            {
+                // calculate the lower, body and upper value for each corresponding date
+                double lower = close - low;
+                double body  = open - close;
+                double upper = high - open;
+                
+                // condition 1: the lower is two times greater than the body
+                // condition 2: the upper is less than half of the body
+                if (open > close)
+                {
+                    if ( lower >= (body*2) && upper <(body/2) )
+                    {
+                        System.out.println("Pattern Found: " + sdfj.format(date));
+                        located = true;
+                    }
+                }
+            }
+        }
+		System.out.println("<<Thankyou for using!>>");
+        //"Pattern not found" will be showed if no data matched with Hanging Man pattern 
+        if (located == false)
+        {
+            System.out.println("Sorry, Pattern not found!");
+        }
+        openfile.close();
+    }
+    
+ //search for three black crows pattern
+    public static void threeBlackCraws(Date sDate, Date eDate, String fileName) throws IOException, ParseException
+    {
+        boolean located = false;
+        //open 5 arrays to store the corresponding value
+        final int arraySize = 10000;
+        Date   date[]  = new Date[arraySize];
+        double open[]  = new double[arraySize];
+        double high[]  = new double[arraySize];
+        double low[]   = new double[arraySize];
+        double close[] = new double[arraySize];
+        
+        SimpleDateFormat sdfj = new SimpleDateFormat("yyyy-MM-dd");
+        
+        File myfile = new File(fileName);
+        Scanner openfile = new Scanner(myfile);
+        openfile.nextLine();
+        
+        int d = 0;
+        while (openfile.hasNext())
+        {
+            //enter the data into array
+            String row = openfile.nextLine(); 
+            String[] data = row.split(",");
+            date[d]  = sdfj.parse(data[0]);
+            open[d]  = Double.parseDouble(data[1]);
+            high[d]  = Double.parseDouble(data[2]);
+            low[d]   = Double.parseDouble(data[3]);
+            close[d] = Double.parseDouble(data[4]);
+            d++; // when finished the while-loop, the d would store how many days had been looped
+        }
+        
+		/*
+		Defining the pattern of Three black crows
+		1. A three days pattern
+		2.The colour of candle stick should be black
+		3.The opening price and closing price should be lower than the previous days
+		4.Should be presenting a downward trend
+		*/
+        //checking the condition of three black crows
+        int p = 0;
+        while ( p < d-2 )
+        {
+            if (date[p].after(sDate) && date[p].before(eDate)){
+                if ( open[p] > close[p] && open[p+1] > close[p+1] && open[p+2] > close[p+2] ){
+					//checking the colour of  candle stick
+                    if ( open[p] > open[p+1] && open[p+1] > open[p+2] ){
+                        if ( close[p] > close[p+1] && close[p+1] > close[p+2] )
+                        {
+                            System.out.println("Pattern Found: " +"\n"+ sdfj.format(date[p])+"\n"
+							+sdfj.format(date[p+1])+"\n"
+							+sdfj.format(date[p+2]));
+                            located = true;
+                        }
+                    }
+                }
+            }
+            p++;
+        }
+		System.out.println("<<Thankyou for using!>>");
+        //"Pattern not found" will be showed if no data matched with threeBlackCrows pattern
+        if(located == false)
+        {
+            System.out.println("Pattern not found!");
+        }
+        openfile.close();
+    }
+//search for Bearish Kicker pattern
+    public static void bearishKicker(Date sDate, Date eDate, String fileName) throws IOException, ParseException
+    {
+        boolean located = false;
+        //open 5 arrays to store the corresponding value
+        final int arraySize = 10000;
+        Date   date[]  = new Date[arraySize];
+        double open[]  = new double[arraySize];
+        double high[]  = new double[arraySize];
+        double low[]   = new double[arraySize];
+        double close[] = new double[arraySize];
+        
+        SimpleDateFormat sdfj = new SimpleDateFormat("yyyy-MM-dd");
+        
+        File myfile = new File(fileName);
+        Scanner openfile = new Scanner(myfile);
+		openfile.nextLine();
+        
+		
+        int d = 0;
+        while (openfile.hasNext())
+        {
+            //enter the data into array
+            String row = openfile.nextLine(); 
+            String[] data = row.split(",");
+            date[d]  = sdfj.parse(data[0]);
+            open[d]  = Double.parseDouble(data[1]);
+            high[d]  = Double.parseDouble(data[2]);
+            low[d]   = Double.parseDouble(data[3]);
+            close[d] = Double.parseDouble(data[4]);
+
+            d++; // when finished the while-loop, the d would store how many days had been looped
+        }
+        
+		/*
+		Defining the Bearish Kicker pattern 
+		1. A 4 days pattern 
+		2.The fisrt three days shouble be white caldle sticks and the rest of the day is black
+		3.The 3rd day opening price should be larger than 4th days opening price 
+		4.The 3rd day opening price should be larger than 4th days closing price 
+		*/
+        //checking the condition of Bearish Kicker pattern
+        int p = 0;
+        while ( p < d-3 )
+        {
+            if (date[p].after(sDate) && date[p].before(eDate)){
+				//Checking the colour of candle stick
+                if ( open[p] < close[p] && open[p+1] < close[p+1] && open[p+2] < close[p+2]&& open[p+3]> close[p+3]){
+                    if ( open[p] < open[p+1] && open[p+1] < open[p+2] && open[p+2]>open[p+3]){
+                        if ( close[p] < close[p+1] && close[p+1] < close[p+2]&& open[p+2]> close[p+3] )
+                        {
+                            System.out.println("Pattern Found: " +"\n"+ sdfj.format(date[p])+"\n"
+							+sdfj.format(date[p+1])+"\n"
+							+sdfj.format(date[p+2])+"\n"
+							+sdfj.format(date[p+3]));
+                            located = true;
+                        }
+                    }
+                }
+            }
+            p++;
+        }
+		System.out.println("<<Thankyou for using!>>");
+        //"Pattern not found" will be showed if no data matched with Bearish kicker pattern
+        if(located == false)
+        {
+            System.out.println("Pattern not found!");
+        }
+        openfile.close();
+		
+    
+    }
+}
+  
