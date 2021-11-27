@@ -2,7 +2,7 @@ import java.util.*;
 import java.text.*;
 import java.io.*;
 
-public class IS3230_L02_2
+public class Stock_Price
 {
     public static void main (String[] args) throws IOException, ParseException
     {
