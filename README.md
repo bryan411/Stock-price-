@@ -12,13 +12,19 @@
 javac Stock_Price_Pattern.java  
 java Stock_Price_Pattern.java 2012-12-12 2015-12-12
 
+出力内容
  ---Please input your opiton--- 
  1. Hanging Man 
  2. Three Black Craws 
  3. Bearish Kicker 
  4. Quit
  ------------------------------ 
-Input: 1
+Input: 
+
+入力内容
+Input: １
+
+出力内容：
 Pattern Found: 2013-04-05
 Pattern Found: 2013-08-22
 Pattern Found: 2014-06-18
