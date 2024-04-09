@@ -15,7 +15,7 @@ public class Stock_Price
         int enter = getUserOption();
         while (enter < 1 || enter > 3)
         {
-            System.out.println("Please imput integer from 1 to 3."+"\n" +"Please try again");
+            System.out.println("Please imput integer from 1 to 3."+"\n" +"Please input again");
             enter = getUserOption();
         }
         
